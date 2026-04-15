@@ -1,0 +1,9 @@
+name: ECON3121_GP
+channels:
+  - conda-forge
+dependencies:
+  - statsmodels
+  - spyder-kernels=3.1
+  - pandas
+  - numpy
+prefix: /Users/edmundzhou/miniforge3/envs/ECON3121_GP
