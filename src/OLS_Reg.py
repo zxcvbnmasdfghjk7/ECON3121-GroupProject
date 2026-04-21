@@ -10,4 +10,3 @@ import statsmodels.api as sm
 import pandas
 from patsy import dmatrices
 
-aapl
