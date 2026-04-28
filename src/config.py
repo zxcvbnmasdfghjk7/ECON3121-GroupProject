@@ -35,3 +35,6 @@ def load_toml_config():
 def edgar_identity():
     config_file = load_toml_config()
     return config_file.get('edgar').get('IDENTITY')
+
+# Figures
+REPORT_FIG = PROJECT_ROOT / "reports" / "figures"

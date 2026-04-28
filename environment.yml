@@ -8,5 +8,6 @@ dependencies:
   - seaborn
   - matplotlib
   - edgartools
+  - openpyxl
   
 prefix: /home/eddie/miniforge3/envs/ECON3121_GP

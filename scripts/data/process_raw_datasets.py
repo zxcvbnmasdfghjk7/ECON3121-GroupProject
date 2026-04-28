@@ -33,8 +33,32 @@ sales_revenue = (pd.read_excel(config.DATA_DIRECTORY / "raw" / "statistic_id3821
 sales_revenue = sales_revenue[['Quarter', 'Sales_Revenue']]
 
 # %%
-# Merge Sales_Revenue and Market_Share dataframes
+# Import Statista's Total Net Sales % 
+net_sales = (pd.read_excel(config.DATA_DIRECTORY / "raw" / "statistic_id253655_ipads-share-of-apples-total-net-sales-quarterly-2010-2026.xlsx", 
+                           sheet_name = "Data", 
+                           header = 4, 
+                           index_col = None, 
+                           usecols = "B:C")
+             .rename(columns = {'Unnamed: 1' : 'Quarter'})
+             .rename(columns = {'Unnamed: 2': 'Net_Sales'}))
+
+# Reformat Quarter from Qq 'YY to Qq YYYY
+net_sales['Quarter'] = net_sales['Quarter'].str.replace("'", "20", regex = False)
+# %%
+tablet_shippment = (pd.read_excel(config.DATA_DIRECTORY / "raw" / "statistic_id268711_ipads-tablet-shipment-share-worldwide-quarterly-2012-2025.xlsx", 
+                                  sheet_name = "Data", 
+                                  header = 4, index_col = None, 
+                                  usecols = "B:C")
+                    .rename(columns = {'Unnamed: 1': 'Quarter'})
+                    .rename(columns = {'Unnamed: 2': 'Tablet_Shippments'}))
+
+# %%
+# Merge dataframes
 aapl = pd.merge(sales_revenue, market_share, on = 'Quarter', how = 'inner')
 
+aapl = pd.merge(aapl, net_sales, on = 'Quarter', how = 'inner')
+
+aapl = pd.merge(aapl, tablet_shippment, on = "Quarter", how = 'left')
+
 # Export 'raw' dataset
-aapl.to_csv(config.DATA_PROCESSED / "merged_dataset.csv", index = False, columns = ['Quarter', 'Market_Share', 'Sales_Revenue'])
+aapl.to_csv(config.DATA_PROCESSED / "merged_dataset.csv", index = False, columns = ['Quarter', 'Market_Share', 'Sales_Revenue', 'Net_Sales', 'Tablet_Shippments'])
