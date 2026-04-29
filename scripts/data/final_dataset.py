@@ -38,5 +38,10 @@ final_dataset['Net_Sales'] = final_dataset['Net_Sales'].fillna(median_net_sales)
 final_dataset['Tablet_Shippments'] = final_dataset['Tablet_Shippments'].fillna(mean_tablet_ship)
 final_dataset['Market_Share'] = final_dataset['Market_Share'].fillna(median_market_share)
 
+# Reformat Quarter from Q%q %YYYY to %YYYYQ%q so Pandas can parse internally.
+final_dataset = final_dataset.reset_index()
+# (Q\d) captures Quarter, (\d+) captures year.
+final_dataset['Quarter'] = final_dataset['Quarter'].str.replace(r'(Q\d) (\d+)', r'\2\1', regex = True)
 # Export
-final_dataset.to_csv(config.DATA_PROCESSED / "final_dataset.csv", index = True)
+final_dataset.set_index('Quarter')
+final_dataset.to_csv(config.DATA_PROCESSED / "final_dataset.csv", index = False, columns = ['Quarter', 'Gross_Margin', 'SGA_Expense', 'Market_Share', 'Sales_Revenue', 'Net_Sales', 'Tablet_Shippments', 'RD_Expense'])

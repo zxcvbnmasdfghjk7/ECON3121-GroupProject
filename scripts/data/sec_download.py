@@ -23,6 +23,7 @@ print(apple.income_statement(periods = 14, annual = True))
 # Quarterly Periods for 14 years = 14 x 4
 apple_income_statement = apple.income_statement(as_dataframe=True, periods = 57, annual = False)
 
+# %%
 # Extract Series 'SellingGeneralAndAdministrativeExpense' from Q1 2012 to Q1 2026
 sga_expense = (apple_income_statement.loc['SellingGeneralAndAdministrativeExpense']
                .iloc[6:63]
@@ -67,16 +68,32 @@ gross_margin = (gross_margin.to_frame(name = "Gross_Margin")
 # Export Gross_Margin
 gross_margin.to_csv(config.DATA_SEC / "gross_margin.csv", index = False, columns = ['Quarter', 'Gross_Margin'])
 # %%
+# Extract R&D Expense
+rd_expense = (apple_income_statement.loc['ResearchAndDevelopmentExpense']
+              .iloc[6:63]
+              .to_frame(name = 'ResearchAndDevelopmentExpense')
+              .rename(columns = {'ResearchAndDevelopmentExpense': 'RD_Expense'})
+              .reset_index()
+              .rename(columns = {'index': 'Quarter'}))
+
+# Transform units into billions
+rd_expense['RD_Expense'] = (rd_expense['RD_Expense'] / 1000000000)
+
+# Export RD_Expense 
+rd_expense.to_csv(config.DATA_SEC / "rd_expense.csv", index = False, columns = ['Quarter', 'RD_Expense'])
+# %%
 # Set Index to Quarter
 gross_margin_m = gross_margin.set_index('Quarter')
 sga_expense_m = sga_expense.set_index('Quarter')
+rd_expense_m = rd_expense.set_index('Quarter')
 
 # Merge
-sec_dataset = (gross_margin_m.join(sga_expense_m, on = 'Quarter', how = 'inner')
-               .reset_index())
+sec_dataset = (gross_margin_m.join(sga_expense_m, on = 'Quarter', how = 'inner'))
+
+sec_dataset = (sec_dataset.join(rd_expense_m, on = 'Quarter', how = 'inner'))
 
 # Export SEC dataset
-sec_dataset.to_csv(config.DATA_PROCESSED / "sec_dataset.csv", index = False, columns = ['Quarter', 'Gross_Margin', 'SGA_Expense'])
+sec_dataset.to_csv(config.DATA_PROCESSED / "sec_dataset.csv", index = True, columns = ['Gross_Margin', 'SGA_Expense', 'RD_Expense'])
 
 # Save Memory by removing unnecessary variables
-del gross_margin_m, sga_expense_m
+del gross_margin_m, sga_expense_m, rd_expense_m

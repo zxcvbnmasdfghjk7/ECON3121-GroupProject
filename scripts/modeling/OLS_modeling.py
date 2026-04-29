@@ -21,7 +21,7 @@ data = pd.read_csv(config.DATA_PROCESSED / "final_dataset.csv")
 
 # %%
 # Construct Matrix
-y, X = dmatrices('Market_Share ~ Gross_Margin + SGA_Expense + Sales_Revenue + Net_Sales + Tablet_Shippments', 
+y, X = dmatrices('Market_Share ~ Gross_Margin + SGA_Expense + Sales_Revenue + Net_Sales + Tablet_Shippments + RD_Expense', 
                  data = data, return_type = 'dataframe')
 
 # Regression
