@@ -1,5 +1,5 @@
 # Information
-This repository contains all files used for ECON3121 - Industrial Organisation Group Assignment Task 2. 
+This repository contains all files used for ECON3121 - Industrial Organisation Group Assignment. 
 
 All graphs produced for the assignment is stored in reports/figures.
 
