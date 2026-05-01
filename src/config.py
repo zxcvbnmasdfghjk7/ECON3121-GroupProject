@@ -38,3 +38,6 @@ def edgar_identity():
 
 # Figures
 REPORT_FIG = PROJECT_ROOT / "reports" / "figures"
+
+# Report directory
+REPORT = PROJECT_ROOT / "reports"

@@ -21,14 +21,18 @@ data = pd.read_csv(config.DATA_PROCESSED / "final_dataset.csv")
 
 # %%
 # Construct Matrix
-y, X = dmatrices('Market_Share ~ Gross_Margin + SGA_Expense + Sales_Revenue + Net_Sales + Tablet_Shippments + RD_Expense', 
+y, X = dmatrices('Market_Share ~ Gross_Margin + SGA_Expense + Sales_Revenue + Tablet_Shippments + RD_Expense', 
                  data = data, return_type = 'dataframe')
-
+ 
 # Regression
 linear_reg = sm.OLS(y, X).fit()
  
 # Print Results
 print(linear_reg.summary())
+
+# Export results as html
+with open((config.REPORT / "OLS_Results_A.csv"), "w") as file:
+    file.write(linear_reg.summary().as_csv())
 # %%
 # Residuals
 residual = linear_reg.resid
@@ -52,23 +56,33 @@ print("--------------------------------------------------")
 print("White test results:")
 print(lzip(white_names, white_test))
 print("--------------------------------------------------")
-# %%
-# Wald's Test for OVB
-wald_test = linear_reg.wald_test('(Gross_Margin = 0, SGA_Expense = 0, Sales_Revenue = 0)', use_f = True)
-
-print(wald_test)
 
 # %%
-# Set residual and actual datapoints
-residual = linear_reg.resid
-fitted = linear_reg.predict(X)
+# Ramsay RESET test
+reset_test = diagnostic.linear_reset(res = linear_reg, use_f = True)
+reset_names = ['F_test', 'p_value', 'df_denom', 'df_num']
 
-# Plot Residual v. Fitted Plot
-fig, ax = plt.subplots(figsize = (5, 4))
+print("--------------------------------------------------")
+print("Ramsay RESET test:")
+print(reset_test.summary())
+print("--------------------------------------------------")
 
-sns.residplot(y = residual, x = fitted, color = "g", lowess = True)
-ax.set_title('Residual v. Fitted Values')
-ax.set_xlabel('Fitted Values')
-ax.set_ylabel('Residual Values')
+# %%
+fig, axes = plt.subplots(1, 2, figsize = (10,5))
 
+fig.suptitle("Plots for Model A")
+
+sns.residplot(y = linear_reg.resid, x = linear_reg.predict(X), color = "g", lowess = True, ax = axes[0])
+axes[0].set_title('Residual Plot')
+axes[0].set_xlabel('Fitted Values')
+axes[0].set_ylabel('Residuals')
+
+sns.regplot(y = linear_reg.predict(X), x = data['Market_Share'], ax = axes[1])
+
+axes[1].set_title("Predicted vs. Actual Values for Market Share")
+axes[1].set_xlabel("Actual Market Share (%)")
+axes[1].set_ylabel("Predicted Market Share (%)")
+
+plt.savefig(config.REPORT_FIG / "Plot_model_A.png")
+plt.tight_layout()
 plt.show()
