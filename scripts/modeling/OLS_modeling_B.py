@@ -31,8 +31,8 @@ linear_reg = sm.OLS(y, X).fit()
 print(linear_reg.summary())
 
 # Export results as html
-with open((config.REPORT / "OLS_Results_B.csv"), "w") as file:
-    file.write(linear_reg.summary().as_csv())
+with open((config.REPORT / "OLS_Results_B.html"), "w") as file:
+    file.write(linear_reg.summary().as_html())
 # %%
 # Residuals
 residual = linear_reg.resid
@@ -89,9 +89,12 @@ plt.tight_layout()
 plt.show()
 
 # %%
-# Hypothesis test
-hypo = 'SGA_Expense = 0'
+# Joint Hypothesis Test
+j_hypotheses = 'Gross_Margin = 0, np.square(Gross_Margin) = 0, SGA_Expense = 0, np.square(SGA_Expense) = 0, np.log(Sales_Revenue) = 0, np.log(Tablet_Shippments) = 0, RD_Expense = 0, np.square(RD_Expense) = 0, Gross_Margin:RD_Expense = 0'
 
 results = linear_reg
 
-print(results.t_test(hypo))
+print("--------------------------------------------------")
+print("Joint Hypothesis Test:")
+print(results.f_test(j_hypotheses))
+print("--------------------------------------------------")
